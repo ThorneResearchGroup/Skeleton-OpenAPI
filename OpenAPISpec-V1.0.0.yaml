@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  description: |
+    This is an API spec sheet
+  version: "1.0.0"
+  title: Skeleton API
+  contact:
+    email: support@tresearchgroup.tech
+    name: Tech Support
+  license:
+    name: GPL V3
+    url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+servers:
+  - url: 'https://api.tresearchgroup.tech'
+tags:
+  - name: general
+    description: All endpoints for general functions
+paths:
+  /v1/artist:
+    get:
+      tags:
+        - general
+      summary: Get artists from database
+      operationId: get
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns the servers version
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistEntity'
+        '404':
+          description: No artists found
+        '500':
+          description: The server encountered an error
+      security:
+        - Authorization: [ ]
+    put:
+      tags:
+        - general
+      summary: Put an artist into the database
+      operationId: put
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The artist was inserted successfully
+        '400':
+          description: The request body contained an invalid artist entity
+        '500':
+          description: The server encountered an error
+      requestBody:
+        $ref: '#/components/requestBodies/ArtistRequestBody'
+      security:
+        - Authorization: [ ]
+    post:
+      tags:
+        - general
+      summary: Put an artist into the database
+      operationId: post
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The artist was inserted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistEntity'
+        '400':
+          description: The request body contained an invalid artist entity
+        '500':
+          description: The server encountered an error
+      requestBody:
+        $ref: '#/components/requestBodies/ArtistRequestBody'
+      security:
+        - Authorization: [ ]
+    options:
+      tags:
+        - general
+      summary: Get options
+      description: Show all options for the endpoint
+      operationId: optionsVersion
+      responses:
+        '200':
+          description: Returns with the allow header, which outlines the available methods
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "GET, PUT, POST"
+
+  /v1/artist/{id}:
+    delete:
+      tags:
+        - general
+      summary: Delete an artist from the database
+      operationId: delete
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: The artist was deleted successfully
+        '404':
+          description: The artist doesnt exist
+        '500':
+          description: The server encountered an error
+      security:
+        - Authorization: [ ]
+    patch:
+      tags:
+        - general
+      summary: Patch an artist in the database
+      operationId: patch
+      parameters:
+        - name: authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: The artist was patched successfully
+        '404':
+          description: The artist doesnt exist
+        '500':
+          description: The server encountered an error
+      security:
+        - Authorization: [ ]
+    options:
+      tags:
+        - general
+      summary: Get options
+      description: Show all options for the endpoint
+      operationId: optionsVersion
+      responses:
+        '200':
+          description: Returns with the allow header, which outlines the available methods
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "DELETE, PATCH"
+components:
+  schemas:
+    ArtistEntity:
+      description: A music artist
+      properties:
+        created:
+          description: The time when the entity was created
+          type: string
+          format: date
+        updated:
+          description: The time when the entity was last updated
+          type: string
+          format: date
+        id:
+          description: The numeric identifier of the artist
+          type: integer
+          format: int64
+        name:
+          description: The name of the artist
+          type: string
+        views:
+          description: The number of views
+          type: integer
+          format: int64
+        ext:
+          $ref: '#/components/schemas/Enum'
+    Enum:
+      type: string
+      enum: [ AAC, MP3, FLAC, OGG, ALAC, AC3, WAV ]
+  requestBodies:
+    UploadRequestBody:
+      content:
+        application/octet-stream:
+          schema:
+            type: object
+            properties:
+              fileName:
+                type: string
+                format: binary
+      description: The file you wish to upload
+      required: true
+    ArtistRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ArtistEntity'
+      description: The artist entity
+      required: true
+
+  securitySchemes:
+    Authorization:
+      type: apiKey
+      name: Authorization
+      in: header
